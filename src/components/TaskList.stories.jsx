@@ -22,29 +22,29 @@ export const MockedState = {
 };
 
 // A super-simple mock of a redux store
-const Mockstore = ({ taskboxState, children }) => (
-  <Provider
-    store={configureStore({
-      reducer: {
-        taskbox: createSlice({
-          name: "taskbox",
-          initialState: taskboxState,
-          reducers: {
-            updateTaskState: (state, action) => {
-              const { id, newTaskState } = action.payload;
-              const task = state.tasks.findIndex((task) => task.id === id);
-              if (task >= 0) {
-                state.tasks[task].state = newTaskState;
-              }
-            },
-          },
-        }).reducer,
+const Mockstore = ({ taskboxState, children }) => {
+  const TasksSlice = createSlice({
+    name: "taskbox",
+    initialState: taskboxState,
+    reducers: {
+      updateTaskState: (state, action) => {
+        const { id, newTaskState } = action.payload;
+        const task = state.tasks.findIndex((task) => task.id === id);
+        if (task >= 0) {
+          state.tasks[task].state = newTaskState;
+        }
       },
-    })}
-  >
-    {children}
-  </Provider>
-);
+    },
+  });
+
+  const store = configureStore({
+    reducer: {
+      taskbox: TasksSlice.reducer,
+    },
+  });
+
+  return <Provider store={store}>{children}</Provider>;
+};
 
 export default {
   component: TaskList,
